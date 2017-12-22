@@ -28,7 +28,7 @@ public class UserController {
 		return bll.select(identification);
 	}
 
-	public User selec(final String login, final char[] password) {
+	public User select(final String login, final char[] password) {
 		final String strPassword = String.valueOf(password);
 		return bll.select(login, strPassword);
 	}
