@@ -3,6 +3,8 @@ package com.soinsoftware.hotelero.core.controller;
 import java.io.IOException;
 import java.util.List;
 
+import lombok.extern.log4j.Log4j;
+
 import com.soinsoftware.hotelero.persistence.bll.RoomStatusBll;
 import com.soinsoftware.hotelero.persistence.entity.RoomStatus;
 
@@ -10,32 +12,64 @@ import com.soinsoftware.hotelero.persistence.entity.RoomStatus;
  * @author Carlos Rodriguez
  * @since 1.0.0
  */
+@Log4j
 public class RoomStatusController {
 
-	private final RoomStatusBll bll;
-
-	public RoomStatusController() throws IOException {
-		super();
-		bll = new RoomStatusBll();
-	}
-
 	public List<RoomStatus> select() {
-		return bll.selectAll(true);
+		try {
+			final RoomStatusBll bll = new RoomStatusBll();
+			final List<RoomStatus> statuses = bll.selectAll(true);
+			bll.closeDbConnection();
+			return statuses;
+		} catch (final IOException ex) {
+			log.error(ex.getMessage());
+			return null;
+		}
 	}
 
 	public RoomStatus selectBooked() {
-		return bll.selectRoomStatusBooked();
+		try {
+			final RoomStatusBll bll = new RoomStatusBll();
+			final RoomStatus status = bll.selectRoomStatusBooked();
+			bll.closeDbConnection();
+			return status;
+		} catch (final IOException ex) {
+			log.error(ex.getMessage());
+			return null;
+		}
 	}
 
 	public RoomStatus selectEnabled() {
-		return bll.selectRoomStatusEnabled();
+		try {
+			final RoomStatusBll bll = new RoomStatusBll();
+			final RoomStatus status = bll.selectRoomStatusEnabled();
+			bll.closeDbConnection();
+			return status;
+		} catch (final IOException ex) {
+			log.error(ex.getMessage());
+			return null;
+		}
 	}
 
 	public RoomStatus selectDisabled() {
-		return bll.selectRoomStatusDisabled();
+		try {
+			final RoomStatusBll bll = new RoomStatusBll();
+			final RoomStatus status = bll.selectRoomStatusDisabled();
+			bll.closeDbConnection();
+			return status;
+		} catch (final IOException ex) {
+			log.error(ex.getMessage());
+			return null;
+		}
 	}
 
 	public void save(final RoomStatus roomStatus) {
-		bll.save(roomStatus);
+		try {
+			final RoomStatusBll bll = new RoomStatusBll();
+			bll.save(roomStatus);
+			bll.closeDbConnection();
+		} catch (final IOException ex) {
+			log.error(ex.getMessage());
+		}
 	}
 }

@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import lombok.extern.log4j.Log4j;
+
 import com.soinsoftware.hotelero.persistence.bll.CompanyBll;
 import com.soinsoftware.hotelero.persistence.entity.Company;
 
@@ -12,30 +14,38 @@ import com.soinsoftware.hotelero.persistence.entity.Company;
  * @author Carlos Rodriguez
  * @since 1.0.0
  */
+@Log4j
 public class CompanyController {
 
-	private final CompanyBll bll;
-
-	public CompanyController() throws IOException {
-		super();
-		bll = new CompanyBll();
-	}
-
 	public List<Company> select() {
-		final List<Company> companies = bll.selectAll(true);
-		if (companies != null && !companies.isEmpty()) {
-			Collections.sort(companies);
+		try {
+			final CompanyBll bll = new CompanyBll();
+			final List<Company> companies = bll.selectAll(true);
+			bll.closeDbConnection();
+			if (companies != null && !companies.isEmpty()) {
+				Collections.sort(companies);
+			}
+			return companies;
+		} catch (final IOException ex) {
+			log.error(ex.getMessage());
+			return null;
 		}
-		return companies;
 	}
 
 	public void save(final String name, final String nit) {
 		final Date currentDate = new Date();
-		final Company serviceType = new Company(name, nit, currentDate, currentDate, true);
+		final Company serviceType = new Company(name, nit, currentDate,
+				currentDate, true);
 		save(serviceType);
 	}
 
 	public void save(final Company company) {
-		bll.save(company);
+		try {
+			final CompanyBll bll = new CompanyBll();
+			bll.save(company);
+			bll.closeDbConnection();
+		} catch (final IOException ex) {
+			log.error(ex.getMessage());
+		}
 	}
 }

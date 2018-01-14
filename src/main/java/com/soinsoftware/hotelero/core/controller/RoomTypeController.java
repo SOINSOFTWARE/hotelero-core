@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import lombok.extern.log4j.Log4j;
+
 import com.soinsoftware.hotelero.persistence.bll.RoomTypeBll;
 import com.soinsoftware.hotelero.persistence.entity.RoomType;
 
@@ -11,21 +13,22 @@ import com.soinsoftware.hotelero.persistence.entity.RoomType;
  * @author Carlos Rodriguez
  * @since 1.0.0
  */
+@Log4j
 public class RoomTypeController {
 
-	private final RoomTypeBll bll;
-
-	public RoomTypeController() throws IOException {
-		super();
-		bll = new RoomTypeBll();
-	}
-
 	public List<RoomType> select() {
-		final List<RoomType> roomTypes = bll.selectAll(true);
-		if (roomTypes != null && !roomTypes.isEmpty()) {
-			Collections.sort(roomTypes);
+		try {
+			final RoomTypeBll bll = new RoomTypeBll();
+			final List<RoomType> roomTypes = bll.selectAll(true);
+			bll.closeDbConnection();
+			if (roomTypes != null && !roomTypes.isEmpty()) {
+				Collections.sort(roomTypes);
+			}
+			return roomTypes;
+		} catch (final IOException ex) {
+			log.error(ex.getMessage());
+			return null;
 		}
-		return roomTypes;
 	}
 
 	public void save(final String code, final String name) {
@@ -34,6 +37,12 @@ public class RoomTypeController {
 	}
 
 	public void save(final RoomType roomType) {
-		bll.save(roomType);
+		try {
+			final RoomTypeBll bll = new RoomTypeBll();
+			bll.save(roomType);
+			bll.closeDbConnection();
+		} catch (final IOException ex) {
+			log.error(ex.getMessage());
+		}
 	}
 }
