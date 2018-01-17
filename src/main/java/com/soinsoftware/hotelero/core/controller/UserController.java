@@ -3,11 +3,12 @@ package com.soinsoftware.hotelero.core.controller;
 import java.io.IOException;
 import java.util.Date;
 
-import lombok.extern.log4j.Log4j;
-
 import com.soinsoftware.hotelero.persistence.bll.UserBll;
 import com.soinsoftware.hotelero.persistence.entity.Company;
+import com.soinsoftware.hotelero.persistence.entity.Hotel;
 import com.soinsoftware.hotelero.persistence.entity.User;
+
+import lombok.extern.log4j.Log4j;
 
 /**
  * @author Carlos Rodriguez
@@ -45,13 +46,12 @@ public class UserController {
 		}
 	}
 
-	public User save(final Company company, final long identification,
-			final String name, final long phone, final String career) {
+	public User save(final Company company, final long identification, final String name, final long phone,
+			final String career, final Hotel hotel) {
 		User user = select(identification);
 		final Date currentDate = new Date();
 		if (user == null) {
-			user = new User(company, identification, name, phone, career,
-					currentDate, currentDate, true);
+			user = new User(company, identification, name, phone, career, currentDate, currentDate, true, hotel);
 		} else {
 			user.setUpdated(currentDate);
 		}

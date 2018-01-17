@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
-
 import com.soinsoftware.hotelero.persistence.bll.FloorBll;
 import com.soinsoftware.hotelero.persistence.entity.Floor;
+import com.soinsoftware.hotelero.persistence.entity.Hotel;
+
+import lombok.extern.log4j.Log4j;
 
 /**
  * @author Carlos Rodriguez
@@ -31,8 +32,8 @@ public class FloorController {
 		}
 	}
 
-	public void save(final String code, final String name) {
-		final Floor floor = new Floor(code, name);
+	public void save(final String code, final String name, final Hotel hotel) {
+		final Floor floor = new Floor(code, name, hotel);
 		save(floor);
 	}
 

@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
-
 import com.soinsoftware.hotelero.persistence.bll.RoomTypeBll;
+import com.soinsoftware.hotelero.persistence.entity.Hotel;
 import com.soinsoftware.hotelero.persistence.entity.RoomType;
+
+import lombok.extern.log4j.Log4j;
 
 /**
  * @author Carlos Rodriguez
@@ -31,8 +32,8 @@ public class RoomTypeController {
 		}
 	}
 
-	public void save(final String code, final String name) {
-		final RoomType roomType = new RoomType(code, name);
+	public void save(final String code, final String name, final Hotel hotel) {
+		final RoomType roomType = new RoomType(code, name, hotel);
 		save(roomType);
 	}
 

@@ -5,10 +5,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
-
 import com.soinsoftware.hotelero.persistence.bll.CompanyBll;
 import com.soinsoftware.hotelero.persistence.entity.Company;
+import com.soinsoftware.hotelero.persistence.entity.Hotel;
+
+import lombok.extern.log4j.Log4j;
 
 /**
  * @author Carlos Rodriguez
@@ -32,10 +33,9 @@ public class CompanyController {
 		}
 	}
 
-	public void save(final String name, final String nit) {
+	public void save(final String name, final String nit, final Hotel hotel) {
 		final Date currentDate = new Date();
-		final Company serviceType = new Company(name, nit, currentDate,
-				currentDate, true);
+		final Company serviceType = new Company(name, nit, currentDate, currentDate, true, hotel);
 		save(serviceType);
 	}
 

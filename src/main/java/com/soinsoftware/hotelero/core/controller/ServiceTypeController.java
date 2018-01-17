@@ -8,10 +8,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
-
 import com.soinsoftware.hotelero.persistence.bll.ServiceTypeBll;
+import com.soinsoftware.hotelero.persistence.entity.Hotel;
 import com.soinsoftware.hotelero.persistence.entity.ServiceType;
+
+import lombok.extern.log4j.Log4j;
 
 /**
  * @author Carlos Rodriguez
@@ -35,10 +36,9 @@ public class ServiceTypeController {
 		}
 	}
 
-	public void save(final String name) {
+	public void save(final String name, final Hotel hotel) {
 		final Date currentDate = new Date();
-		final ServiceType serviceType = new ServiceType(name, currentDate,
-				currentDate, true);
+		final ServiceType serviceType = new ServiceType(name, currentDate, currentDate, true, hotel);
 		save(serviceType);
 	}
 

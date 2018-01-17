@@ -12,15 +12,16 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
-
 import com.soinsoftware.hotelero.persistence.bll.InvoiceBll;
 import com.soinsoftware.hotelero.persistence.entity.Company;
+import com.soinsoftware.hotelero.persistence.entity.Hotel;
 import com.soinsoftware.hotelero.persistence.entity.Invoice;
 import com.soinsoftware.hotelero.persistence.entity.InvoiceStatus;
 import com.soinsoftware.hotelero.persistence.entity.Room;
 import com.soinsoftware.hotelero.persistence.entity.RoomStatus;
 import com.soinsoftware.hotelero.persistence.entity.User;
+
+import lombok.extern.log4j.Log4j;
 
 /**
  * @author Carlos Rodriguez
@@ -47,8 +48,7 @@ public class InvoiceController {
 		final Date initialDate = getInitialDateForBooked();
 		try {
 			final InvoiceBll bll = new InvoiceBll();
-			final List<Invoice> invoices = bll.selectByStatus(roomStatus,
-					initialDate);
+			final List<Invoice> invoices = bll.selectByStatus(roomStatus, initialDate);
 			bll.closeDbConnection();
 			if (invoices != null && !invoices.isEmpty()) {
 				Collections.sort(invoices);
@@ -60,15 +60,13 @@ public class InvoiceController {
 		}
 	}
 
-	public List<Invoice> selectNotEnabled(final Date initialDate,
-			final Date finalDate) {
+	public List<Invoice> selectNotEnabled(final Date initialDate, final Date finalDate) {
 		buildDateWithHour(initialDate, 12);
 		buildDateWithHour(finalDate, 12);
 		final RoomStatus roomStatus = roomStatusController.selectEnabled();
 		try {
 			final InvoiceBll bll = new InvoiceBll();
-			List<Invoice> invoices = bll.selectByNonStatus(roomStatus,
-					initialDate, finalDate);
+			List<Invoice> invoices = bll.selectByNonStatus(roomStatus, initialDate, finalDate);
 			bll.closeDbConnection();
 			return invoices;
 		} catch (final IOException ex) {
@@ -87,12 +85,10 @@ public class InvoiceController {
 				Collections.sort(invoices, new Comparator<Invoice>() {
 
 					@Override
-					public int compare(final Invoice firstInvoice,
-							final Invoice secondInvoice) {
+					public int compare(final Invoice firstInvoice, final Invoice secondInvoice) {
 						final Room firstRoom = firstInvoice.getRoom();
 						final Room secondRoom = secondInvoice.getRoom();
-						return firstRoom.getName().compareTo(
-								secondRoom.getName());
+						return firstRoom.getName().compareTo(secondRoom.getName());
 					}
 				});
 			}
@@ -103,14 +99,12 @@ public class InvoiceController {
 		}
 	}
 
-	public List<Invoice> selectByDate(final int year, final int month,
-			final InvoiceStatus invoiceStatus, final Company company) {
-		final RoomStatus roomStatusEnabled = roomStatusController
-				.selectEnabled();
+	public List<Invoice> selectByDate(final int year, final int month, final InvoiceStatus invoiceStatus,
+			final Company company) {
+		final RoomStatus roomStatusEnabled = roomStatusController.selectEnabled();
 		try {
 			final InvoiceBll bll = new InvoiceBll();
-			final List<Invoice> invoices = bll.selectByStatus(
-					roomStatusEnabled, year, month, invoiceStatus, company);
+			final List<Invoice> invoices = bll.selectByStatus(roomStatusEnabled, year, month, invoiceStatus, company);
 			bll.closeDbConnection();
 			if (invoices != null && !invoices.isEmpty()) {
 				Collections.sort(invoices);
@@ -122,35 +116,28 @@ public class InvoiceController {
 		}
 	}
 
-	public Invoice saveBooking(final User user, final String roomName,
-			final Date initialDate, final Date finalDate,
-			final String siteFrom, final String siteTo, final Company company) {
+	public Invoice saveBooking(final User user, final String roomName, final Date initialDate, final Date finalDate,
+			final String siteFrom, final String siteTo, final Company company, final Hotel hotel) {
 		final RoomStatus roomStatus = roomStatusController.selectBooked();
-		return save(user, roomName, roomStatus, initialDate, finalDate,
-				siteFrom, siteTo, company);
+		return save(user, roomName, roomStatus, initialDate, finalDate, siteFrom, siteTo, company, hotel);
 	}
 
-	public Invoice saveCheckIn(final User user, final String roomName,
-			final Date initialDate, final Date finalDate,
-			final String siteFrom, final String siteTo, final Company company) {
+	public Invoice saveCheckIn(final User user, final String roomName, final Date initialDate, final Date finalDate,
+			final String siteFrom, final String siteTo, final Company company, final Hotel hotel) {
 		final RoomStatus roomStatus = roomStatusController.selectDisabled();
-		return save(user, roomName, roomStatus, initialDate, finalDate,
-				siteFrom, siteTo, company);
+		return save(user, roomName, roomStatus, initialDate, finalDate, siteFrom, siteTo, company, hotel);
 	}
 
-	private Invoice save(final User user, final String roomCode,
-			final RoomStatus roomStatus, final Date initialDate,
-			final Date finalDate, final String siteFrom, final String siteTo,
-			final Company company) {
+	private Invoice save(final User user, final String roomCode, final RoomStatus roomStatus, final Date initialDate,
+			final Date finalDate, final String siteFrom, final String siteTo, final Company company,
+			final Hotel hotel) {
 		buildDateWithHour(initialDate, 13);
 		buildDateWithHour(finalDate, 12);
 		final Room room = roomController.select(roomCode);
-		final InvoiceStatus invoiceStatus = invoiceStatusController
-				.selectNoPaid();
+		final InvoiceStatus invoiceStatus = invoiceStatusController.selectNoPaid();
 		final Date currentDate = new Date();
-		final Invoice invoice = new Invoice(company, invoiceStatus, room,
-				roomStatus, user, initialDate, finalDate, 0, siteFrom, siteTo,
-				currentDate, currentDate, true, null);
+		final Invoice invoice = new Invoice(company, invoiceStatus, room, roomStatus, user, initialDate, finalDate, 0,
+				siteFrom, siteTo, currentDate, currentDate, true, null, hotel);
 		this.save(invoice);
 		return invoice;
 	}
@@ -177,10 +164,8 @@ public class InvoiceController {
 	private Date getInitialDateForBooked() {
 		final LocalTime midnight = LocalTime.MIDNIGHT;
 		final LocalDate today = LocalDate.now();
-		final LocalDateTime tomorrowMidnight = today.plusDays(1).atTime(
-				midnight);
-		final ZonedDateTime zdt = tomorrowMidnight.atZone(ZoneId
-				.systemDefault());
+		final LocalDateTime tomorrowMidnight = today.plusDays(1).atTime(midnight);
+		final ZonedDateTime zdt = tomorrowMidnight.atZone(ZoneId.systemDefault());
 		return Date.from(zdt.toInstant());
 	}
 }
