@@ -3,9 +3,11 @@ package com.soinsoftware.hotelero.core.controller;
 import java.io.IOException;
 import java.util.Date;
 
+import com.soinsoftware.hotelero.core.exception.LoginException;
 import com.soinsoftware.hotelero.persistence.bll.UserBll;
 import com.soinsoftware.hotelero.persistence.entity.Company;
 import com.soinsoftware.hotelero.persistence.entity.Hotel;
+import com.soinsoftware.hotelero.persistence.entity.Role;
 import com.soinsoftware.hotelero.persistence.entity.User;
 
 import lombok.extern.log4j.Log4j;
@@ -66,6 +68,17 @@ public class UserController {
 			bll.closeDbConnection();
 		} catch (final IOException ex) {
 			log.error(ex.getMessage());
+		}
+	}
+
+	public void validateLoggedUser(final User user) throws LoginException {
+		if (user != null && user.isEnabled()) {
+			final Role role = user.getRole();
+			if (role == null || !role.isEnabled()) {
+				throw new LoginException(LoginException.MSG_NOT_ROLE);
+			}
+		} else {
+			throw new LoginException(LoginException.MSG_NOT_VALID);
 		}
 	}
 }
