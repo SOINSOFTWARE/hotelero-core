@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.soinsoftware.hotelero.persistence.bll.RoleAccessBll;
+import com.soinsoftware.hotelero.persistence.entity.Role;
 import com.soinsoftware.hotelero.persistence.entity.RoleAccess;
 
 import lombok.extern.log4j.Log4j;
@@ -19,6 +20,18 @@ public class RoleAccessController {
 		try {
 			final RoleAccessBll bll = new RoleAccessBll();
 			final List<RoleAccess> roleAccesses = bll.selectAll(true);
+			bll.closeDbConnection();
+			return roleAccesses;
+		} catch (final IOException ex) {
+			log.error(ex.getMessage());
+			return null;
+		}
+	}
+
+	public List<RoleAccess> select(final Role role) {
+		try {
+			final RoleAccessBll bll = new RoleAccessBll();
+			final List<RoleAccess> roleAccesses = bll.select(role);
 			bll.closeDbConnection();
 			return roleAccesses;
 		} catch (final IOException ex) {
